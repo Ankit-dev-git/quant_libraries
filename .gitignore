@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Python
+venv/
+.env/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+build/
+out/
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
