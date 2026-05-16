@@ -21,6 +21,8 @@ obj/
 *.user
 *.userosscache
 *.sln.docstates
+*.vcxproj
+*.vcxproj.filters
 
 # VS Code
 .vscode/
