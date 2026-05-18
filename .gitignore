@@ -27,6 +27,32 @@ obj/
 # VS Code
 .vscode/
 
+# Visual Studio build folders
+Debug/
+Release/
+x64/
+x86/
+
+# Build artifacts
+*.obj
+*.exe
+*.ilk
+*.pdb
+*.idb
+*.tlog
+*.lastbuildstate
+*.recipe
+
+# VC project temp files
+*.VC.db
+*.VC.opendb
+
+# Visual Studio generated files
+*.vcxproj.user
+
+# Output CSVs
+*.csv
+
 # Logs
 *.log
 
