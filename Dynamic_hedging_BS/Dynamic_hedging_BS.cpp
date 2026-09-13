@@ -48,11 +48,12 @@ int main()
     auto computationEnd = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> computationTime = computationEnd - start;
-    std::cout << "Delta hedging took " << computationTime.count() << " ms\n";
+    std::cout << "Multi-threaded Delta hedging took " << computationTime.count() << " ms\n";
 
     savedatacontainer(Pnl, "Pnl.csv");
     auto saveEnd = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> saveTime = saveEnd - computationEnd;
+    std::cout << "saving took " << saveTime << " ms\n";
     std::cout << "Total took "<< std::chrono::duration<double, std::milli>(saveEnd - start).count()<< " ms\n";
 
     return 0;
