@@ -49,6 +49,8 @@ x86/
 
 # Visual Studio generated files
 *.vcxproj.user
+*.rc
+resource.h
 
 # Output CSVs
 *.csv
