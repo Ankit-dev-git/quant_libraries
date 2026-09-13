@@ -1,10 +1,10 @@
 #include <iostream>
-#include <thread>
 #include <chrono>
 #include "generate_paths.h"
 #include "BS_price.h"
 #include "delta_hedge.h"
 #include "DataContainerCreation.h"
+#include "parallel_for.h"
 
 int main()
 {
@@ -19,11 +19,6 @@ int main()
     
     Grid Pnl(numPaths, numSteps+1);
 
-    unsigned int numThreads = std::thread::hardware_concurrency();
-    std::cout << "Number of threads: " << numThreads << std::endl;
-    if (numThreads == 0) numThreads = 4;
-
-    // Creating lambda functions
     auto worker = [&](int startPath, int endPath) {
         std::vector<double> s(numSteps + 1), deltas(numSteps + 1), callPrice(numSteps + 1);
         for (int i = startPath; i < endPath; ++i) {
@@ -48,22 +43,11 @@ int main()
 
     start = std::chrono::high_resolution_clock::now();
 
-    std::vector<std::jthread> threads;
-    int chunkSize = numPaths / numThreads;
-    int remainder = numPaths % numThreads;
-    int startPath = 0;
-
-    for (unsigned int t = 0; t < numThreads; ++t) {
-        int endPath = startPath + chunkSize + (t < static_cast<unsigned int>(remainder) ? 1 : 0);
-        threads.emplace_back(worker, startPath, endPath);
-        startPath = endPath;
-    }
-
-    threads.clear();
+    parallel_for(0, numPaths, worker);
 
     auto computationEnd = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<double, std::milli> computationTime = computationEnd - start;\
+    std::chrono::duration<double, std::milli> computationTime = computationEnd - start;
     std::cout << "Delta hedging took " << computationTime.count() << " ms\n";
 
     savedatacontainer(Pnl, "Pnl.csv");
