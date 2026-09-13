@@ -19,6 +19,7 @@ int main()
     
     Grid Pnl(numPaths, numSteps+1);
 
+    // Creating a lambda funciton
     auto worker = [&](int startPath, int endPath) {
         std::vector<double> s(numSteps + 1), deltas(numSteps + 1), callPrice(numSteps + 1);
         for (int i = startPath; i < endPath; ++i) {
@@ -34,6 +35,7 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
+    // Running the whole process without multi-threading
     worker(0, numPaths);
     auto end = std::chrono::high_resolution_clock::now();
 
@@ -41,6 +43,7 @@ int main()
 
     std::cout << "Single-threaded delta hedging: " << elapsed.count() << " ms\n";
 
+    // running whole process with multi-threading
     start = std::chrono::high_resolution_clock::now();
 
     parallel_for(0, numPaths, worker);
@@ -50,6 +53,7 @@ int main()
     std::chrono::duration<double, std::milli> computationTime = computationEnd - start;
     std::cout << "Multi-threaded Delta hedging took " << computationTime.count() << " ms\n";
 
+    // Saving the final data containers in csv files for further analysis
     savedatacontainer(Pnl, "Pnl.csv");
     auto saveEnd = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> saveTime = saveEnd - computationEnd;
