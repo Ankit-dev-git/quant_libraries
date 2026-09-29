@@ -1,6 +1,6 @@
 # pricing_lib
 
-![CI](https://github.com/<your-username>/pricing_lib/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Ankit-dev-git/quant_libraries/actions/workflows/ci.yml/badge.svg)
 
 A C++20 derivatives pricing library built from scratch: Monte Carlo simulation, discrete delta hedging, and Fourier-based option pricing. Built with CMake, tested with GoogleTest, and continuously integrated on Linux via GitHub Actions.
 
