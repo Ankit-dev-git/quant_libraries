@@ -68,13 +68,3 @@ Unit tests use GoogleTest and run in CI on every push. Current coverage:
 - Put–call parity
 
 Tests are added alongside every new model.
-
----
-
-## Roadmap
-
-- [ ] Heston, Merton jump-diffusion and Bates models via a shared characteristic-function interface (CRTP), priced with both COS and Carr–Madan
-- [ ] Heston Monte Carlo, cross-checked against Fourier prices
-- [ ] Barrier and Asian options in the Monte Carlo engine
-- [ ] Yield curve bootstrapping (OIS)
-- [ ] Algorithmic adjoint differentiation (AAD) for Greeks
