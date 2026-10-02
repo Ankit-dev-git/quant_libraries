@@ -14,4 +14,6 @@ target_link_libraries(hedging PUBLIC Threads::Threads PRIVATE project_warnings)
 add_executable(dynamic_hedging Dynamic_hedging_BS.cpp)
 target_link_libraries(dynamic_hedging PRIVATE hedging project_warnings)
 
-add_subdirectory(tests)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
