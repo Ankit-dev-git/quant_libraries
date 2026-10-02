@@ -14,6 +14,7 @@ build/
 out/
 bin/
 obj/
+build-*/
 
 # Visual Studio
 .vs/
