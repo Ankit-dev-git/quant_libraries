@@ -8,7 +8,7 @@
 
 int main()
 {
-    int numPaths{ 10000 }, numSteps{ 1000 };
+    int numPaths{ 50000 }, numSteps{ 1000 };
     double T{ 1.0 }, r{ 0.1 }, sigma{ 0.2 }, s0{ 1.0 }, K{ 0.95 };
     double dt{ T / numSteps };
 
