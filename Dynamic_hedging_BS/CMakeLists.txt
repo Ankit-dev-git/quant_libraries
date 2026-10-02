@@ -9,9 +9,9 @@ add_library(hedging
 )
 target_include_directories(hedging PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(Threads REQUIRED)
-target_link_libraries(hedging PUBLIC Threads::Threads)
+target_link_libraries(hedging PUBLIC Threads::Threads PRIVATE project_warnings)
 
 add_executable(dynamic_hedging Dynamic_hedging_BS.cpp)
-target_link_libraries(dynamic_hedging PRIVATE hedging)
+target_link_libraries(dynamic_hedging PRIVATE hedging project_warnings)
 
 add_subdirectory(tests)

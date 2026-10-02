@@ -5,6 +5,7 @@
 
 double bs::option_price(OptionType CP, double stock_price, double k, double sigma, double t, double T, double r)
 {	
+	int unused = 0;
 	double value{ 0 };
 	if(T-t < 1e-12){
 		if (CP == OptionType::call)
