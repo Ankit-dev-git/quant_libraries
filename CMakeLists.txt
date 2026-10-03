@@ -19,3 +19,4 @@ endif()
 
 add_subdirectory(core)
 add_subdirectory(Dynamic_hedging_BS)
+add_subdirectory(FFT_solver)

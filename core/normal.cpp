@@ -1,6 +1,7 @@
 #include "normal.h"
 #include <random>
 #include <cmath>
+#include <numbers>
 #include<stdexcept>
 
 static thread_local std::mt19937 rng{ std::random_device{}() };
