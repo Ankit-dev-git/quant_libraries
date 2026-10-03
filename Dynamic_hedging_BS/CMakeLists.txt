@@ -1,5 +1,4 @@
 add_library(hedging
-    BS_price.cpp
     DataContainerCreation.cpp
     GridCreation.cpp
     delta_hedge.cpp
@@ -11,7 +10,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(hedging PUBLIC Threads::Threads PRIVATE project_warnings core)
 
 add_executable(dynamic_hedging Dynamic_hedging_BS.cpp)
-target_link_libraries(dynamic_hedging PRIVATE hedging project_warnings)
+target_link_libraries(dynamic_hedging PRIVATE hedging project_warnings core)
 
 if(BUILD_TESTING)
     add_subdirectory(tests)

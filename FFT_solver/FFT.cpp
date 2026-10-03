@@ -1,4 +1,4 @@
-#include "fft.h"
+#include "FFT.h"
 #include <cmath>
 
 const double PI = 3.14159265358979323846;

@@ -1,5 +1,6 @@
 add_library(core 
-    normal.cpp)
+    normal.cpp
+    BS_price.cpp)
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
