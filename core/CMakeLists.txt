@@ -5,3 +5,7 @@ add_library(core
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(core PRIVATE project_warnings)
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
