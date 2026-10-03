@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/Ankit-dev-git/quant_libraries/actions/workflows/ci.yml/badge.svg)
 
-A C++20 derivatives pricing library built from scratch: Monte Carlo simulation, discrete delta hedging, and Fourier-based option pricing. Built with CMake, tested with GoogleTest, and continuously integrated on Linux via GitHub Actions.
+A C++20 derivatives pricing library built from scratch: Monte Carlo simulation, discrete delta hedging, and Fourier methods (characteristic-function inversion via FFT). Built with CMake, tested with GoogleTest, and continuously integrated on Linux via GitHub Actions.
 
 ---
 
@@ -16,12 +16,12 @@ Simulates the discrete delta hedging of a European option under Black–Scholes 
 - **What it measures:** distribution of hedging P&L across paths
 - **Performance:** delta-hedging simulation parallelised with a custom `parallel_for` thread pool
   - 50,000 paths × 1,000 steps, Release build (GCC 15, WSL2): **7.5 s single-threaded → 1.7 s with 8 threads on 4 physical cores (4.3×)**
-  - Median of 5 runs. The gain above 4× is most likely from hyperthreading (run order and thermal effects were checked and ruled out).
+  - Median of 5 runs; timings cover the per-path hedging loop only (GBM path generation runs beforehand and is not timed). Single- and multi-threaded P&L outputs are identical. The gain above 4× is most likely from hyperthreading (run order and thermal effects were checked and ruled out).
 
-### 2. FFT Option Pricer (`FFT_solver/`)
+### 2. Fourier density recovery (`FFT_solver/`)
 
-Carr–Madan FFT pricing of European options with Simpson's rule weights.
-*In progress:* CMake integration and a GoogleTest check against the Black–Scholes closed form.
+Recovers a probability density from its characteristic function using a radix-2 Cooley–Tukey FFT with a trapezoidal boundary correction, checked against the exact normal density.
+*In progress:* CMake integration and GoogleTest checks. Next: COS option pricing with Black–Scholes and Heston characteristic functions.
 
 ---
 
@@ -69,8 +69,9 @@ quant_libraries/
 │   ├── DataContainerCreation.{h,cpp}
 │   ├── normal.{h,cpp}              # normal CDF / PDF
 │   └── tests/                      # GoogleTest unit tests
-└── FFT_solver/
-    └── FFT.{h,cpp}                 # Carr–Madan FFT pricer (not yet in the build)
+└── FFT_solver/                     # not yet in the build
+    ├── FFT.{h,cpp}                 # recursive radix-2 FFT
+    └── FFT_solver.cpp              # CF → density recovery + main()
 ```
 
 ---

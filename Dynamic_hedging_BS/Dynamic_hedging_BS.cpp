@@ -38,11 +38,11 @@ int main()
     // Running the whole process without multi-threading
     worker(0, numPaths);
     auto end = std::chrono::high_resolution_clock::now();
-
     std::chrono::duration<double, std::milli> elapsed = end - start;
-
     std::cout << "Single-threaded delta hedging: " << elapsed.count() << " ms\n";
 
+    savedatacontainer(Pnl, "Pnl_single_thread.csv");
+    
     // running whole process with multi-threading
     start = std::chrono::high_resolution_clock::now();
 
@@ -54,7 +54,7 @@ int main()
     std::cout << "Multi-threaded Delta hedging took " << computationTime.count() << " ms\n";
 
     // Saving the final data containers in csv files for further analysis
-    savedatacontainer(Pnl, "Pnl.csv");
+    savedatacontainer(Pnl, "Pnl_multi_thread.csv");
     auto saveEnd = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> saveTime = saveEnd - computationEnd;
     std::cout << "saving took " << saveTime << " ms\n";
