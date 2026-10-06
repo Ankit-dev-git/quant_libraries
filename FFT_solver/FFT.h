@@ -3,6 +3,7 @@
 #include <vector>
 #include <complex>
 #include <numbers>
+#include<functional>
 
 using Complex = std::complex<double>;
 namespace fourier{

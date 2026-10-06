@@ -76,9 +76,10 @@ int main()
         << std::endl;
 
 // Check for BS_charac_func
-    fourier::CF BS_cf = fourier::charac_func_BS(fourier::BlackScholes_params(.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1));
+    fourier::BlackScholes_params bs_params {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 2};
+    fourier::CF BS_cf = fourier::charac_func_BS(bs_params);
     std::cout<<"Black_scholes characteristic function at u=0: "<< BS_cf(0) << std::endl;
-    std::cout<<"Black_scholes characteristic function absolute value at u=10 and T=1: "<< std::abs(BS_cf(10)) << std::endl;
+    std::cout<<"Black_scholes characteristic function absolute value at u=10 and T= "<< bs_params.T <<": "<< std::abs(BS_cf(10)) << std::endl;
 
     return 0;
-}
+} 

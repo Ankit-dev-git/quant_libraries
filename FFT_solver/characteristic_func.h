@@ -1,6 +1,5 @@
 #pragma once
 #include "FFT.h"
-#include <functional>
 
 namespace fourier{
     struct BlackScholes_params{

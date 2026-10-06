@@ -2,7 +2,6 @@
 
 #include "FFT.h"
 #include <vector>
-#include <functional>
 #include <complex>
 
 // Struct for the result object from recover_density
