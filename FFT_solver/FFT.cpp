@@ -23,7 +23,7 @@ void FFT(std::vector<Complex>& x)
     for (int k = 0; k < N / 2; ++k)
     {
         Complex twiddle =
-            std::polar(1.0, -2.0 * PI * k / N);
+            std::polar(1.0, -2.0 * fourier::PI * k / N);
 
         Complex t = twiddle * odd[k];
 

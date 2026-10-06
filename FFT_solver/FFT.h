@@ -5,6 +5,9 @@
 #include <numbers>
 
 using Complex = std::complex<double>;
-constexpr double PI = std::numbers::pi;
+namespace fourier{
+    constexpr double PI = std::numbers::pi;
+    using CF = std::function<Complex(double)>;
+}
 
 void FFT(std::vector<Complex>& x);

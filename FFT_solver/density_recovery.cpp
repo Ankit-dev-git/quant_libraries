@@ -4,7 +4,7 @@
 // Recover Density
 //----------------------------------------------------
 
-DensityResult RecoverDensity(CF cf, double du, double x_min, int N)
+DensityResult RecoverDensity(fourier::CF cf, double du, double x_min, int N)
 {
     Complex i(0.0, 1.0);
 
@@ -21,7 +21,7 @@ DensityResult RecoverDensity(CF cf, double du, double x_min, int N)
 
     result.x.resize(N);
 // Building the x-grid
-    double dx = 2.0 * PI / (du*N);
+    double dx = 2.0 * fourier::PI / (du*N);
     for (int k = 0; k < N; ++k)
         result.x[k] = x_min + k * dx;
 
@@ -51,7 +51,7 @@ DensityResult RecoverDensity(CF cf, double du, double x_min, int N)
     // Boundary correction
         Complex gamma_2 = std::exp(-i * result.x[k] * u[N - 1]) * cf_last;
         Complex phi_boundary = 0.5 * (gamma_1 + gamma_2);
-        result.density[k] = du / PI * (phi[k] - phi_boundary).real();
+        result.density[k] = du / fourier::PI * (phi[k] - phi_boundary).real();
     }
 
 // Final Density object returned

@@ -5,6 +5,7 @@
 #include <numbers>
 #include "FFT.h"
 #include "normal.h"
+#include "characteristic_func.h"
 #include "density_recovery.h"
 
 int main()
@@ -22,7 +23,7 @@ int main()
 
 
 // Characteristic Function of Normal Distribution
-    CF normal_cf = [=](double u)
+    fourier::CF normal_cf = [=](double u)
         {
             Complex i(0.0, 1.0);
 
@@ -31,7 +32,7 @@ int main()
 
 
 // Build calculating x_min and dx
-    double dx = 2.0 * PI / (du*N);
+    double dx = 2.0 * fourier::PI / (du*N);
     double x_min = -N * dx / 2.0; 
 
     /* x_min = −(N/2)·dx; so X runs from −N·dx/2 to (N·dx/2 − dx); 
@@ -73,6 +74,11 @@ int main()
     std::cout
         << "Data exported to density_comparison.csv"
         << std::endl;
+
+// Check for BS_charac_func
+    fourier::CF BS_cf = fourier::charac_func_BS(fourier::BlackScholes_params(.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1));
+    std::cout<<"Black_scholes characteristic function at u=0: "<< BS_cf(0) << std::endl;
+    std::cout<<"Black_scholes characteristic function absolute value at u=10 and T=1: "<< std::abs(BS_cf(10)) << std::endl;
 
     return 0;
 }

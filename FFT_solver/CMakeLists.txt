@@ -1,6 +1,7 @@
 add_library(recover_density
     density_recovery.cpp
     FFT.cpp
+    characteristic_func.cpp
 )
 
 target_include_directories(recover_density PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
