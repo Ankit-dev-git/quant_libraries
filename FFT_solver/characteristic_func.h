@@ -10,5 +10,10 @@ namespace fourier{
         
     };
 
-    CF charac_func_BS(BlackScholes_params params);
+    struct BSInvFourResult{
+        CF charac_func;
+        double mu;
+    };
+
+    BSInvFourResult charac_func_BS(BlackScholes_params params);
 }

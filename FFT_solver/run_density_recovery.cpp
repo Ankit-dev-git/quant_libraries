@@ -1,12 +1,14 @@
+#include "FFT.h"
+#include "normal.h"
+#include "characteristic_func.h"
+#include "density_recovery.h"
+#include "fourier_pricer.h"
+#include "BS_price.h"
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <fstream>
 #include <numbers>
-#include "FFT.h"
-#include "normal.h"
-#include "characteristic_func.h"
-#include "density_recovery.h"
 
 int main()
 {
@@ -76,10 +78,22 @@ int main()
         << std::endl;
 
 // Check for BS_charac_func
-    fourier::BlackScholes_params bs_params {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 2};
-    fourier::CF BS_cf = fourier::charac_func_BS(bs_params);
-    std::cout<<"Black_scholes characteristic function at u=0: "<< BS_cf(0) << std::endl;
-    std::cout<<"Black_scholes characteristic function absolute value at u=10 and T= "<< bs_params.T <<": "<< std::abs(BS_cf(10)) << std::endl;
+    fourier::BlackScholes_params params {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
+    fourier::BSInvFourResult BS_cf_mu = fourier::charac_func_BS(params);
+    std::cout<<"Black_scholes characteristic function at u=0: "<< BS_cf_mu.charac_func(0) << std::endl;
+    std::cout<<"Black_scholes characteristic function absolute value at u=10 and T= "<< params.T <<": "<< std::abs(BS_cf_mu.charac_func(10)) << std::endl;
+
+// Checking if Inverse fourier FFT works
+    N = 64; // same for both X and u
+    u_span = 100.0; 
+    double K = 100.0;
+    du = u_span/N;
+    dx = 2.0 * fourier::PI / (du*N);
+    double x_min_bs = BS_cf_mu.mu - N/2*dx;
+    DensityResult bs_recovered_density_obj = RecoverDensity(BS_cf_mu.charac_func, du, x_min_bs, N);
+    double fourier_call_price {fourier::call_price_from_density(bs_recovered_density_obj, K, params.r, params.T)};
+    std::cout << "Analytical BS Call Price: " << bs::option_price(OptionType::call, params.S_0, K, params.sigma, 0.0, params.T, params.r)  << ";" << std::endl; 
+    std::cout<< "Fourier BS call price: "<< fourier_call_price << std::endl; 
 
     return 0;
 } 
