@@ -1,4 +1,6 @@
 #include "density_recovery.h"
+#include <stdexcept>
+#include <cmath>
 
 //----------------------------------------------------
 // Recover Density
@@ -6,6 +8,8 @@
 
 DensityResult RecoverDensity(fourier::CF cf, double du, double x_min, int N)
 {
+    if (N<=0 || !std::isfinite(du) || du<=0)
+        throw std::invalid_argument("N and du should be positive and non-infinite");
     Complex i(0.0, 1.0);
 
 // Creating empty DensityResult object

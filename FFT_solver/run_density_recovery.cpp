@@ -9,6 +9,7 @@
 #include <cmath>
 #include <fstream>
 #include <numbers>
+#include <stdexcept>
 
 int main()
 {
@@ -83,17 +84,35 @@ int main()
     std::cout<<"Black_scholes characteristic function at u=0: "<< BS_cf_mu.charac_func(0) << std::endl;
     std::cout<<"Black_scholes characteristic function absolute value at u=10 and T= "<< params.T <<": "<< std::abs(BS_cf_mu.charac_func(10)) << std::endl;
 
-// Checking if Inverse fourier FFT works
     N = 64; // same for both X and u
-    u_span = 100.0; 
+    u_span = 100.0;
     double K = 100.0;
-    du = u_span/N;
-    dx = 2.0 * fourier::PI / (du*N);
-    double x_min_bs = BS_cf_mu.mu - N/2*dx;
-    DensityResult bs_recovered_density_obj = RecoverDensity(BS_cf_mu.charac_func, du, x_min_bs, N);
-    double fourier_call_price {fourier::call_price_from_density(bs_recovered_density_obj, K, params.r, params.T)};
-    std::cout << "Analytical BS Call Price: " << bs::option_price(OptionType::call, params.S_0, K, params.sigma, 0.0, params.T, params.r)  << ";" << std::endl; 
-    std::cout<< "Fourier BS call price: "<< fourier_call_price << std::endl; 
+    double analytical_price = bs::option_price(OptionType::call, params.S_0, K, params.sigma, 0.0, params.T, params.r);
+    double last_price {0.0};
+    std::cout << "Analytical BS Call Price: " <<  analytical_price << ";" << std::endl; 
+// Checking if Inverse fourier FFT works
+    for (int i=1; i<=10; i++){
+    // Error decrease by 4 for doubling of dx.
+        du = u_span/N;
+        dx = 2.0 * fourier::PI / (du*N);
+        int dx_shift = static_cast<int>((BS_cf_mu.mu - std::log(K))/dx);
+        double x_min_bs = std::log(K) - (N/2 - dx_shift)*dx;
+        // double x_min_bs = BS_cf_mu.mu - N/2*dx;
+        DensityResult bs_recovered_density_obj = RecoverDensity(BS_cf_mu.charac_func, du, x_min_bs, N);
+        double fourier_call_price {fourier::call_price_from_density(bs_recovered_density_obj, K, params.r, params.T)};
+        
+        // std::cout<< "Fourier BS call price: "<< fourier_call_price << std::endl; 
+        std::cout << "N: "<< N<< "; Direct error: " << analytical_price - fourier_call_price << std::endl;
+    
+        // Richardson Method to make error decrease by 2^4 for every doubling of dx
+        if (last_price){
+            double method_2_price = (4*fourier_call_price - last_price)/3;
+            std::cout << "N: "<< N<< "; Richardson error: " << analytical_price - method_2_price << std::endl;
+        }
+        last_price = fourier_call_price;
+        u_span*=2;
+        N*=2;
+    }
 
     return 0;
 } 
