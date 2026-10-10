@@ -1,5 +1,6 @@
 #pragma once
 #include "FFT.h"
+#include <string>
 
 namespace fourier{
     struct BlackScholes_params{
@@ -10,10 +11,17 @@ namespace fourier{
         
     };
 
-    struct BSInvFourResult{
+    struct CharacteristicFuncResult{
         CF charac_func;
-        double mu;
+        double mu_terminal;
+        double sigma_terminal;
+        std::string model;
     };
 
-    BSInvFourResult charac_func_BS(BlackScholes_params params);
+    CharacteristicFuncResult charac_func_BS(BlackScholes_params params);
+// TODO  
+// 1. CharacteristicFuncResult charac_func_Heston(Heston params); 
+// 2. CharacteristicFuncResult charac_func_Merton(Merton params); 
+// 3. CharacteristicFuncResult charac_func_Bates(Bates params);
+
 }

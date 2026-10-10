@@ -18,13 +18,13 @@ namespace{
 TEST(FFT, RecoverDensityMustFailN){
     std::vector<int> must_fail {5, 0, -8, -256, 12};
     for (int elem: must_fail)
-        EXPECT_THROW(RecoverDensity(test_cf, 0.1, 0.0, elem), std::invalid_argument);
+        EXPECT_THROW(RecoverDensity(test_cf, 0.1, 0.0, elem), std::invalid_argument) << "N = " << elem;
 }
 
 TEST(FFT, RecoverDensityMustPassN){
     std::vector<int> must_pass {1, 1024, 2};
     for (int elem: must_pass)
-        EXPECT_NO_THROW(RecoverDensity(test_cf, 0.1, 0.0, elem));
+        EXPECT_NO_THROW(RecoverDensity(test_cf, 0.1, 0.0, elem)) << "N = " << elem;
 }
 
 TEST(FFT, RejectNonPowerN){
@@ -37,5 +37,5 @@ TEST(FFT, RejectNonPowerN){
 TEST(FFT, RejectBadDu){
     std::vector<double> du {0.0, -0.7, std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()};
     for (double elem: du)
-        EXPECT_THROW(RecoverDensity(test_cf, elem, 0.0, 64), std::invalid_argument);
+        EXPECT_THROW(RecoverDensity(test_cf, elem, 0.0, 64), std::invalid_argument) << "du = " << elem;
 }

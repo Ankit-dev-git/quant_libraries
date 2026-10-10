@@ -1,4 +1,4 @@
-add_executable(density_recovery_tests test_density_recovery.cpp)
+add_executable(density_recovery_tests test_size.cpp test_CF.cpp)
 target_link_libraries(density_recovery_tests PRIVATE recover_density GTest::gtest_main project_warnings core)
 
 include(GoogleTest)

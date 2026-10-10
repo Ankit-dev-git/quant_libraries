@@ -80,7 +80,7 @@ int main()
 
 // Check for BS_charac_func
     fourier::BlackScholes_params params {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::BSInvFourResult BS_cf_mu = fourier::charac_func_BS(params);
+    fourier::CharacteristicFuncResult BS_cf_mu = fourier::charac_func_BS(params);
     std::cout<<"Black_scholes characteristic function at u=0: "<< BS_cf_mu.charac_func(0) << std::endl;
     std::cout<<"Black_scholes characteristic function absolute value at u=10 and T= "<< params.T <<": "<< std::abs(BS_cf_mu.charac_func(10)) << std::endl;
 
@@ -95,7 +95,7 @@ int main()
     // Error decrease by 4 for doubling of dx.
         du = u_span/N;
         dx = 2.0 * fourier::PI / (du*N);
-        int dx_shift = static_cast<int>((BS_cf_mu.mu - std::log(K))/dx);
+        int dx_shift = static_cast<int>((BS_cf_mu.mu_terminal - std::log(K))/dx);
         double x_min_bs = std::log(K) - (N/2 - dx_shift)*dx;
         // double x_min_bs = BS_cf_mu.mu - N/2*dx;
         DensityResult bs_recovered_density_obj = RecoverDensity(BS_cf_mu.charac_func, du, x_min_bs, N);
