@@ -3,6 +3,7 @@ add_library(recover_density
     FFT.cpp
     characteristic_func.cpp
     fourier_pricer.cpp
+    grid_builder.cpp
 )
 
 target_include_directories(recover_density PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

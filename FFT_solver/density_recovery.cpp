@@ -6,7 +6,7 @@
 // Recover Density
 //----------------------------------------------------
 
-DensityResult RecoverDensity(fourier::CF cf, double du, double x_min, int N)
+fourier::DensityResult fourier::RecoverDensity(fourier::CF cf, double du, double x_min, int N)
 {
     if (N<=0 || !std::isfinite(du) || du<=0)
         throw std::invalid_argument("N and du should be positive and non-infinite");

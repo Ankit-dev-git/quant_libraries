@@ -44,7 +44,7 @@ int main()
 
 
 // Calculating density using fourier inversion and DFT.
-    DensityResult recovered_density_obj = RecoverDensity(normal_cf, du, x_min, N);
+    fourier::DensityResult recovered_density_obj = fourier::RecoverDensity(normal_cf, du, x_min, N);
 
 //------------------------------------------------
 // Compute exact pdf for testing and comparison
@@ -85,7 +85,6 @@ int main()
     std::cout<<"Black_scholes characteristic function absolute value at u=10 and T= "<< params.T <<": "<< std::abs(BS_cf_mu.charac_func(10)) << std::endl;
 
     N = 64; // same for both X and u
-    u_span = 100.0;
     double K = 100.0;
     double analytical_price = bs::option_price(OptionType::call, params.S_0, K, params.sigma, 0.0, params.T, params.r);
     double last_price {0.0};
@@ -98,7 +97,7 @@ int main()
         int dx_shift = static_cast<int>((BS_cf_mu.mu_terminal - std::log(K))/dx);
         double x_min_bs = std::log(K) - (N/2 - dx_shift)*dx;
         // double x_min_bs = BS_cf_mu.mu - N/2*dx;
-        DensityResult bs_recovered_density_obj = RecoverDensity(BS_cf_mu.charac_func, du, x_min_bs, N);
+        fourier::DensityResult bs_recovered_density_obj = fourier::RecoverDensity(BS_cf_mu.charac_func, du, x_min_bs, N);
         double fourier_call_price {fourier::call_price_from_density(bs_recovered_density_obj, K, params.r, params.T)};
         
         // std::cout<< "Fourier BS call price: "<< fourier_call_price << std::endl; 

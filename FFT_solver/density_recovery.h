@@ -4,10 +4,12 @@
 #include <vector>
 #include <complex>
 
+namespace fourier{
 // Struct for the result object from recover_density
-struct DensityResult {
-    std::vector<double> x;        // grid points
-    std::vector<double> density;  // f(x) at those points
-};
+    struct DensityResult {
+        std::vector<double> x;        // grid points
+        std::vector<double> density;  // f(x) at those points
+    };
 
-DensityResult RecoverDensity(fourier::CF cf, double du, double x_min, int N = 64);
+    DensityResult RecoverDensity(fourier::CF cf, double du, double x_min, int N = 64);
+}
