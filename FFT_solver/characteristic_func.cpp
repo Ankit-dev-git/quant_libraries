@@ -16,3 +16,13 @@ fourier::CharacteristicFuncResult fourier::charac_func_BS(fourier::BlackScholes_
     };
     return result;
 }
+
+std::pair<double, double> fourier::charac_func_cumulants(const CF& charac_func, double h){
+    if (!std::isfinite(h) || std::abs(h)<1e-5 || std::abs(h)>1e-2)
+        throw std::invalid_argument("h should be between 1e-2:1e-5 and finite!");
+    std::pair<double, double> mean_var;
+    Complex log_phi_h = std::log(charac_func(h));
+    mean_var.first = log_phi_h.imag()/h;
+    mean_var.second = -2.0*log_phi_h.real()/(h*h);
+    return mean_var;
+}

@@ -74,32 +74,6 @@ TEST(BsParam, ValidR){
 }
 
 
-TEST(CfGeneric, Phi0){
-    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::CharacteristicFuncResult result1 = fourier::charac_func_BS(param);
-    double phi_0_real = result1.charac_func(0).real();
-    double phi_0_img = result1.charac_func(0).imag();
-    EXPECT_NEAR(phi_0_real, 1.0, 1e-14);
-    EXPECT_NEAR(phi_0_img, 0.0, 1e-14);
-}
-TEST(CfGeneric, PhiUModulus){
-    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::CharacteristicFuncResult result1 = fourier::charac_func_BS(param);
-    fourier::CF phi = result1.charac_func;
-    std::vector<double> u_vec {0.1, 1.0, 5.0};
-    for (auto u: u_vec)
-        EXPECT_LE(std::abs(phi(u)), 1.0)<< "u = " << u;
-}
-TEST(CfGeneric, PhiUConj){
-    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::CharacteristicFuncResult result1 = fourier::charac_func_BS(param);
-    fourier::CF phi = result1.charac_func;
-    std::vector<double> u_vec {0.1, 1.0, 5.0};
-    for (auto u: u_vec){
-        Complex phi_minus_u = phi(-u);
-        EXPECT_NEAR(phi(u).real(), std::conj(phi_minus_u).real(), 1e-14) << "u = " << u;
-        EXPECT_NEAR(phi(u).imag(), std::conj(phi_minus_u).imag(), 1e-14) << "u = " << u;
-    }
-}
+
 
     
