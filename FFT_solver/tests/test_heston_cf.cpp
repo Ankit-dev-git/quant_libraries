@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "characteristic_func.h"
+#include "FFT.h"
 #include <stdexcept>
 #include <limits>
 #include <vector>
@@ -72,3 +73,29 @@ TEST(HestonCf, AcceptsNegR){
     EXPECT_NO_THROW(fourier::charac_func_Heston(no_throw_params));
 }
 
+TEST(HestonCf, ModelName){
+    fourier::HestonParams no_throw_params {.S_0 = 100, .T = 1, .r = 0.0, .kappa = 1.5768, .gamma = 0.5751, .v_bar = 0.0398, .v0 = 0.0175, .rho = -0.5711};
+    EXPECT_EQ(fourier::charac_func_Heston(no_throw_params).model, "Heston");
+}
+
+TEST(HestonCf, TerminalMoments){
+    fourier::HestonParams no_throw_params {.S_0 = 100, .T = 1, .r = 0.0, .kappa = 1.5768, .gamma = 0.5751, .v_bar = 0.0398, .v0 = 0.0175, .rho = -0.5711};
+    fourier::CharacteristicFuncResult result = fourier::charac_func_Heston(no_throw_params);
+    double mean = result.mu_terminal;
+    double sigma = result.sigma_terminal;
+    EXPECT_TRUE(std::isfinite(mean));
+    EXPECT_TRUE(std::isfinite(sigma));
+    EXPECT_GE(sigma, 0.0 + 1e-12);
+    EXPECT_NEAR(sigma*sigma, fourier::charac_func_cumulants(result.charac_func).second, 1e-12);
+}
+
+TEST(HestonCf, DecayLargeU){
+    fourier::HestonParams heston_params {.S_0 = 100, .T = 1, .r = 0.0, .kappa = 1.5768, .gamma = 0.5751, .v_bar = 0.0398, .v0 = 0.0175, .rho = -0.5711};
+    fourier::CharacteristicFuncResult result = fourier::charac_func_Heston(heston_params);
+    fourier::CF phi = result.charac_func;
+
+// Heston φ decays exponentially in u (≈ e^{−0.114u} for these params), not Gaussian like BS, hence the looser threshold / larger u.
+    std::vector<double> u_vec {150, 200, 300};
+    for (auto u: u_vec)
+        EXPECT_LT(std::abs(phi(u)), 1e-5)<< "u = " << u;
+}

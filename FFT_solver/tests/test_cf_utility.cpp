@@ -1,33 +1,65 @@
 #include <gtest/gtest.h>
 #include "characteristic_func.h"
 #include <utility>
+#include <ostream>
+#include "FFT.h"
 
-TEST(CfGeneric, Phi0){
-    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::CharacteristicFuncResult result1 = fourier::charac_func_BS(param);
-    double phi_0_real = result1.charac_func(0).real();
-    double phi_0_img = result1.charac_func(0).imag();
+class CfGeneric: public testing::TestWithParam<fourier::CharacteristicFuncResult>{};
+namespace{
+    fourier::BlackScholes_params bs_params {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
+    fourier::HestonParams heston_params {.S_0 = 100, .T = 1, .r = 0.0, .kappa = 1.5768, .gamma = 0.5751, .v_bar = 0.0398, .v0 = 0.0175, .rho = -0.5711};
+}
+
+namespace fourier{
+    void PrintTo(const CharacteristicFuncResult& value, std::ostream* os){
+        *os<< value.model;
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TestInputs,
+    CfGeneric,
+    testing::Values(fourier::charac_func_BS(bs_params), fourier::charac_func_Heston(heston_params)),
+    [](const testing::TestParamInfo<fourier::CharacteristicFuncResult>& info){
+        return info.param.model;
+    }
+);
+
+TEST_P(CfGeneric, Phi0){
+    fourier::CharacteristicFuncResult result = GetParam();
+    Complex charac_func_0 = result.charac_func(0);
+    double phi_0_real = charac_func_0.real();
+    double phi_0_img = charac_func_0.imag();
     EXPECT_NEAR(phi_0_real, 1.0, 1e-14);
     EXPECT_NEAR(phi_0_img, 0.0, 1e-14);
 }
-TEST(CfGeneric, PhiUModulus){
-    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::CharacteristicFuncResult result1 = fourier::charac_func_BS(param);
-    fourier::CF phi = result1.charac_func;
+
+TEST_P(CfGeneric, PhiUModulus){
+    fourier::CharacteristicFuncResult result = GetParam();
+    fourier::CF phi = result.charac_func;
     std::vector<double> u_vec {0.1, 1.0, 5.0};
     for (auto u: u_vec)
         EXPECT_LE(std::abs(phi(u)), 1.0)<< "u = " << u;
 }
-TEST(CfGeneric, PhiUConj){
-    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
-    fourier::CharacteristicFuncResult result1 = fourier::charac_func_BS(param);
-    fourier::CF phi = result1.charac_func;
+
+TEST_P(CfGeneric, PhiUConj){
+    fourier::CharacteristicFuncResult result = GetParam();
+    fourier::CF phi = result.charac_func;
     std::vector<double> u_vec {0.1, 1.0, 5.0};
     for (auto u: u_vec){
         Complex phi_minus_u = phi(-u);
-        EXPECT_NEAR(phi(u).real(), std::conj(phi_minus_u).real(), 1e-14) << "u = " << u;
-        EXPECT_NEAR(phi(u).imag(), std::conj(phi_minus_u).imag(), 1e-14) << "u = " << u;
+        Complex phi_u_conj = std::conj(phi(u));
+        EXPECT_NEAR(phi_u_conj.real(), phi_minus_u.real(), 1e-14) << "u = " << u;
+        EXPECT_NEAR(phi_u_conj.imag(), phi_minus_u.imag(), 1e-14) << "u = " << u;
     }
+}
+
+TEST_P(CfGeneric, DecayLargeU){
+    fourier::CharacteristicFuncResult result = GetParam();
+    fourier::CF phi = result.charac_func;
+    std::vector<double> u_vec {10, 50, 100};
+    for (std::size_t i=1; i<u_vec.size(); ++i)
+        EXPECT_GT(std::abs(phi(u_vec[i-1])),std::abs(phi(u_vec[i]))) << "u = " << u_vec[i] << " u(-1) = " << u_vec[i-1];
 }
 
 TEST(CfGeneric, CfCumulants){

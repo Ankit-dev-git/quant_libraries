@@ -73,4 +73,14 @@ TEST(BsParam, ValidR){
     EXPECT_NO_THROW(fourier::charac_func_BS(param));
 }
 
+TEST(BsCf, DecayLargeU){
+    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 2};
+    fourier::CharacteristicFuncResult result = fourier::charac_func_BS(param);
+    fourier::CF phi = result.charac_func;
+    
+// BS model specific decay test as the threshold differs from Heston and thus parameterized test was not possible
+    std::vector<double> u_vec {50, 100, 200};
+    for (auto u: u_vec)
+        EXPECT_LT(std::abs(phi(u)), 1e-10)<< "u = " << u;
+}
     
