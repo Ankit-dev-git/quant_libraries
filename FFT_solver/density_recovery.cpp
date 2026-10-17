@@ -6,6 +6,8 @@
 // Recover Density
 //----------------------------------------------------
 
+//  This function takes characteristic function (which we get from the model specific characteristic function) and the du, x_min from build_grid function return object;
+//  It provides the density function and x-grid, which can then be used in the pricing function;
 fourier::DensityResult fourier::RecoverDensity(fourier::CF cf, double du, double x_min, int N)
 {
     if (N<=0 || !std::isfinite(du) || du<=0)

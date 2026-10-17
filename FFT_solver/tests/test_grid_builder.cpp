@@ -111,3 +111,26 @@ TEST(GridBuilder, BadSigma){
         EXPECT_THROW(fourier::build_grid(BS_charac, K, L), std::invalid_argument) << "Sigma_terminal = " << elem;
     }
 }
+
+TEST(GridBuilder, BadC4){
+    fourier::BlackScholes_params bs_param {.S_0 = 100.0, .r = 0.05, .sigma = 0.2, .T = 1};
+    fourier::CharacteristicFuncResult BS_charac = fourier::charac_func_BS(bs_param);
+    std::vector<double> vec{std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()};
+    double K = 100, L = 4;
+    for (auto& elem: vec){
+        BS_charac.c4 = elem;
+        EXPECT_THROW(fourier::build_grid(BS_charac, K, L), std::invalid_argument) << "c4_terminal = " << elem;
+    }
+}
+
+TEST(CfGeneric, NegC4Clamped){
+    fourier::BlackScholes_params param {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 2};
+    fourier::CharacteristicFuncResult result = fourier::charac_func_BS(param);
+    result.c4 = -1e-6;
+    fourier::GridParams grid_param =  fourier::build_grid(result, 100);
+    fourier::CharacteristicFuncResult result_made = result;
+    result_made.c4 = 0;
+    fourier::GridParams grid_param_made =  fourier::build_grid(result_made, 100);
+    EXPECT_NEAR(grid_param.du, grid_param_made.du, 1e-15);
+    EXPECT_NEAR(grid_param.x_min, grid_param_made.x_min, 1e-15);
+}

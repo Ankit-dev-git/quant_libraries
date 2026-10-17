@@ -2,6 +2,8 @@
 #include <cmath>
 #include <stdexcept>
 
+// This is Black Scholes Characteristic funciton builder. It returns the characteristics function along with mean (c1), sigma (sqrt(c2)) and c4; 
+// mean and sigma are calculated directly as known value without numerical approximation;
 fourier::CharacteristicFuncResult fourier::charac_func_BS(fourier::BlackScholes_params params){
     Complex i(0.0, 1.0);
     fourier::CharacteristicFuncResult result;
@@ -14,9 +16,13 @@ fourier::CharacteristicFuncResult fourier::charac_func_BS(fourier::BlackScholes_
     result.charac_func = [mu_t=result.mu_terminal, sigma_t = result.sigma_terminal, i](double u){
         return std::exp(i*u*mu_t- sigma_t*sigma_t*u*u/2);
     };
+    result.c4 = fourier::charac_func_cumulants(result.charac_func).c4;
     return result;
 }
 
+
+// This is Heston Characteristic funciton builder. 
+// It returns the Heston characteristics function along with c1, sqrt(c2) and c4 calculated using cumulant funciton which uses numerical approximation;
 fourier::CharacteristicFuncResult fourier::charac_func_Heston (fourier::HestonParams params){
     Complex i(0.0, 1.0);
     if (params.S_0<=0 || params.v0<0 || params.T<=0 || params.gamma<=0 || std::abs(params.rho)>=1 || params.v_bar <=0 || params.kappa<=0)
@@ -43,18 +49,23 @@ fourier::CharacteristicFuncResult fourier::charac_func_Heston (fourier::HestonPa
         return std::exp(A_tau + B_tau*params.v0 + C*logS0);
     };
     result.model = "Heston";
-    std::pair<double, double> mean_var = fourier::charac_func_cumulants(result.charac_func);
-    result.mu_terminal  = mean_var.first;
-    result.sigma_terminal  = std::sqrt(mean_var.second);
+    Cumulants cumulants = fourier::charac_func_cumulants(result.charac_func);
+    result.mu_terminal  = cumulants.c1;
+    result.sigma_terminal  = std::sqrt(cumulants.c2);
+    result.c4 = cumulants.c4;
+
     return result;
 }
 
-std::pair<double, double> fourier::charac_func_cumulants(const CF& charac_func, double h){
-    if (!std::isfinite(h) || std::abs(h)<1e-5 || std::abs(h)>1e-2)
+
+// This funciton takes a characteristic function and calculate c1, c2 and c4 for it; It returns them in Cumulant struct object;
+fourier::Cumulants fourier::charac_func_cumulants(const CF& charac_func, double h1, double h2){
+    if (!std::isfinite(h1) || std::abs(h1)<1e-5 || std::abs(h1)>1e-2 || !std::isfinite(h2) || std::abs(h2)<1e-5 || std::abs(h2)>1e-2)
         throw std::invalid_argument("h should be between 1e-2:1e-5 and finite!");
-    std::pair<double, double> mean_var;
-    Complex log_phi_h = std::log(charac_func(h));
-    mean_var.first = log_phi_h.imag()/h;
-    mean_var.second = -2.0*log_phi_h.real()/(h*h);
-    return mean_var;
+    fourier::Cumulants cumulants;
+    Complex log_phi_h = std::log(charac_func(h1));
+    cumulants.c1 = log_phi_h.imag()/h1;
+    cumulants.c2 = -2.0*log_phi_h.real()/(h1*h1);
+    cumulants.c4 = 2*(std::log(charac_func(2*h2)) - 4.0*std::log(charac_func(h2))).real()/(h2*h2*h2*h2);
+    return cumulants;
 }
