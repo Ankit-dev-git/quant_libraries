@@ -26,6 +26,15 @@ namespace fourier{
         rho;                    // correlation between X-brownian and V-brownian series
     };
 
+    struct MertonParams{
+        double S_0,
+            T,
+            r,
+            sigma, 
+            lambda,
+            mu_j,
+            sigma_j;
+    };
 // This is the struct of Characteristic funcion, which is returned from every model characteristic function builder;
     struct CharacteristicFuncResult{
         CF charac_func;
@@ -48,9 +57,10 @@ namespace fourier{
 
     CharacteristicFuncResult charac_func_BS(BlackScholes_params params);
     CharacteristicFuncResult charac_func_Heston(HestonParams params); 
+    CharacteristicFuncResult charac_func_Merton(MertonParams params);
 
 // TODO  
-// 1. CharacteristicFuncResult charac_func_Merton(Merton params); 
+// 1.  
 // 2. CharacteristicFuncResult charac_func_Bates(Bates params);
 
 }

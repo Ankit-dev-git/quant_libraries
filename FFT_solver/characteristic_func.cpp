@@ -57,6 +57,35 @@ fourier::CharacteristicFuncResult fourier::charac_func_Heston (fourier::HestonPa
     return result;
 }
 
+fourier::CharacteristicFuncResult fourier::charac_func_Merton(fourier::MertonParams params){
+    Complex i(0.0, 1.0);
+    if (params.S_0<=0 || params.sigma<0 || params.T<=0 || params.sigma_j<0 || params.lambda<0)
+        throw std::invalid_argument("charac_func_Merton: S0 and T must be greater than zero; sigma, sigma_j and lambda must not be negative!");
+    if (!std::isfinite(params.S_0) || !std::isfinite(params.sigma) || !std::isfinite(params.sigma_j) || !std::isfinite(std::abs(params.lambda)) || 
+        !std::isfinite(params.mu_j) || !std::isfinite(params.r) || !std::isfinite(params.T))
+        throw std::invalid_argument("charac_func_Merton: S0, r, sigma, sigma_j, mu, mu_j, lambda and T must be finite!");
+    
+    fourier::CharacteristicFuncResult result;
+    double logS0 = std::log(params.S_0);
+    double kappa = std::exp(params.mu_j + params.sigma_j*params.sigma_j/2) - 1;
+    double mu_b = logS0 + (params.r - params.sigma*params.sigma/2 - params.lambda*kappa)*params.T;
+    double var_b = params.sigma*params.sigma*params.T;
+
+    result.charac_func = [params, i, kappa, mu_b, var_b] (double u) { 
+        Complex phi_b = std::exp(i*u*mu_b - var_b*u*u/2);
+        Complex phi_y = std::exp(i*u*params.mu_j - u*u*params.sigma_j*params.sigma_j/2);
+        return phi_b*std::exp(params.lambda*params.T*(phi_y-1.0));
+    };
+
+    result.model = "Merton";
+    Cumulants cumulants = fourier::charac_func_cumulants(result.charac_func);
+    result.mu_terminal  = cumulants.c1;
+    result.sigma_terminal  = std::sqrt(cumulants.c2);
+    result.c4 = cumulants.c4;
+
+    return result;
+}
+
 
 // This funciton takes a characteristic function and calculate c1, c2 and c4 for it; It returns them in Cumulant struct object;
 fourier::Cumulants fourier::charac_func_cumulants(const CF& charac_func, double h1, double h2){
