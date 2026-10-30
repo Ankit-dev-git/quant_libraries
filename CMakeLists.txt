@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_library(project_warnings INTERFACE)
-target_compile_options(project_warnings INTERFACE -Wall -Wextra -Wpedantic)
+target_compile_options(project_warnings INTERFACE -Wall -Wextra -Wpedantic -Wnon-virtual-dtor)
 
 include(CTest)
 if(BUILD_TESTING)

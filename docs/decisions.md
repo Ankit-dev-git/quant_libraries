@@ -56,12 +56,12 @@
 - **Consequence:** Adding or changing a model does not require a new pricer. Cost: because the pricer only sees the density of S_T at maturity, path-dependent derivatives cannot be priced with it.
 
 
-## <date> — <decision in a few words>
+## <10 Oct 2026> — <usage of c4 in deciding the width of x-grid along with c2>
 
-- **Context:** <the problem or constraint that forced a choice — not the answer>
+- **Context:** <the x-grid based on c2 was not able to cover all the non zero density points>
 - **Options:**
-  1. <alternative A>
-  2. <alternative B>
-- **Decision:** Option <n>.
-- **Why:** <the one main argument>. <evidence: a measured number, test result or concrete failure case>.
-- **Consequence:** <what this makes easier or safer>. Cost: <what it makes harder or rules out>.
+  1. Keep the grid based on c2 and adjust case wise to ensure end point density is zero
+  2. Incorporate c4 (kurtosis) so that grid adjusts automatically
+- **Decision:** Option 2.
+- **Why:** Option 2 was selected becasue changing the grid for every model whose c4 is non-zero would have not been a good design choice. Without adjusting, there was wrap around issue and density at higher x were non zero due to which call option price deviated.
+- **Consequence:** Now the grid is adjusted by adjusting the effective sigma, which ensures that end point x have zero densities. Cost: A coarser dx will require increasing N or decrease in U range.
