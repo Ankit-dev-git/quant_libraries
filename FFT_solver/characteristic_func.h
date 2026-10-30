@@ -35,6 +35,14 @@ namespace fourier{
             mu_j,
             sigma_j;
     };
+
+    struct BatesParams{
+        HestonParams heston;
+        double lambda,
+            mu_j,
+            sigma_j;
+    };
+
 // This is the struct of Characteristic funcion, which is returned from every model characteristic function builder;
     struct CharacteristicFuncResult{
         CF charac_func;
@@ -58,9 +66,6 @@ namespace fourier{
     CharacteristicFuncResult charac_func_BS(BlackScholes_params params);
     CharacteristicFuncResult charac_func_Heston(HestonParams params); 
     CharacteristicFuncResult charac_func_Merton(MertonParams params);
-
-// TODO  
-// 1.  
-// 2. CharacteristicFuncResult charac_func_Bates(Bates params);
+    CharacteristicFuncResult charac_func_Bates(BatesParams params);
 
 }

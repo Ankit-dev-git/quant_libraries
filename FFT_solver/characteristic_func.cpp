@@ -87,6 +87,36 @@ fourier::CharacteristicFuncResult fourier::charac_func_Merton(fourier::MertonPar
 }
 
 
+fourier::CharacteristicFuncResult fourier::charac_func_Bates(fourier::BatesParams params){
+    Complex i(0.0, 1.0);
+    if (params.sigma_j<0 || params.lambda<0)
+        throw std::invalid_argument("charac_func_Bates: sigma_j and lambda must not be negative!");
+    if (!std::isfinite(params.sigma_j) || !std::isfinite(std::abs(params.lambda)) || !std::isfinite(params.mu_j))
+        throw std::invalid_argument("charac_func_Bates: sigma_j, mu_j, and lambda must be finite!");
+    
+    fourier::CharacteristicFuncResult result;
+    double kappa_j = std::exp(params.mu_j + params.sigma_j*params.sigma_j/2) - 1;
+    CF heston_phi = fourier::charac_func_Heston(params.heston).charac_func;
+
+    result.charac_func = [params, i, kappa_j, heston_phi] (double u) { 
+        Complex phi_y = std::exp(i*u*params.mu_j - u*u*params.sigma_j*params.sigma_j/2);
+        return heston_phi(u)*
+        (std::exp(params.lambda*params.heston.T*(phi_y-1.0))*
+        std::exp(-i*u*params.lambda*kappa_j*params.heston.T));
+    };
+
+    result.model = "Bates";
+    Cumulants cumulants = fourier::charac_func_cumulants(result.charac_func);
+    result.mu_terminal  = cumulants.c1;
+    result.sigma_terminal  = std::sqrt(cumulants.c2);
+    result.c4 = cumulants.c4;
+
+    return result;
+}
+
+
+
+
 // This funciton takes a characteristic function and calculate c1, c2 and c4 for it; It returns them in Cumulant struct object;
 fourier::Cumulants fourier::charac_func_cumulants(const CF& charac_func, double h1, double h2){
     if (!std::isfinite(h1) || std::abs(h1)<1e-5 || std::abs(h1)>1e-2 || !std::isfinite(h2) || std::abs(h2)<1e-5 || std::abs(h2)>1e-2)

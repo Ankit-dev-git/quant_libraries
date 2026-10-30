@@ -13,6 +13,7 @@ namespace{
     fourier::BlackScholes_params bs_params {.S_0 = 100, .r = 0.05, .sigma = 0.2, .T = 1};
     fourier::HestonParams heston_params {.S_0 = 100, .T = 1, .r = 0.0, .kappa = 1.5768, .gamma = 0.5751, .v_bar = 0.0398, .v0 = 0.0175, .rho = -0.5711};
     fourier::MertonParams merton_params {.S_0 = 100, .T = 1.0, .r = 0.05, .sigma = 0.2, .lambda = 1.0, .mu_j = -0.1, .sigma_j = 0.2};
+    fourier::BatesParams bates_params { .heston = heston_params, .lambda = 1.0, .mu_j = -0.1, .sigma_j = 0.2 };
     
 }
 
@@ -25,7 +26,7 @@ namespace fourier{
 INSTANTIATE_TEST_SUITE_P(
     TestInputs,
     CfGeneric,
-    testing::Values(fourier::charac_func_BS(bs_params), fourier::charac_func_Heston(heston_params), fourier::charac_func_Merton(merton_params)),
+    testing::Values(fourier::charac_func_BS(bs_params), fourier::charac_func_Heston(heston_params), fourier::charac_func_Merton(merton_params), fourier::charac_func_Bates(bates_params)),
     [](const testing::TestParamInfo<fourier::CharacteristicFuncResult>& info){
         return info.param.model;
     }
