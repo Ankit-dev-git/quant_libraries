@@ -56,12 +56,12 @@
 - **Consequence:** Adding or changing a model does not require a new pricer. Cost: because the pricer only sees the density of S_T at maturity, path-dependent derivatives cannot be priced with it.
 
 
-## <10 Oct 2026> — <usage of c4 in deciding the width of x-grid along with c2>
+## <17 Oct 2026> — <usage of c4 in deciding the width of x-grid along with c2>
 
-- **Context:** <the x-grid based on c2 was not able to cover all the non zero density points>
+- **Context:** <the x-grid based on c2 was not able to cover all the non zero density points. Heston ReferencePrice at L=8/12 gave 5.8386 vs 5.785155 and the end-density test failed (fat tails).>
 - **Options:**
-  1. Keep the grid based on c2 and adjust case wise to ensure end point density is zero
-  2. Incorporate c4 (kurtosis) so that grid adjusts automatically
-- **Decision:** Option 2.
-- **Why:** Option 2 was selected becasue changing the grid for every model whose c4 is non-zero would have not been a good design choice. Without adjusting, there was wrap around issue and density at higher x were non zero due to which call option price deviated.
-- **Consequence:** Now the grid is adjusted by adjusting the effective sigma, which ensures that end point x have zero densities. Cost: A coarser dx will require increasing N or decrease in U range.
+  1. Keep the grid based on c2 and use one large global L (L=16 worked) to ensure end point density is zero
+  2. Incorporate c4 (kurtosis) so that grid adjusts automatically (Fang–Oosterlee: half-width L·√(c2 + √c4))
+- **Decision:** Option 2. c4 < 0 is clamped to 0 in build_grid (estimator stays honest); non-finite c4 throws. c4 uses its own step h2 = 1e-2 (round-off ~16ε/h⁴ at the c2 step 1e-4 would swamp it).
+- **Why:** Option 2 was selected because a fixed large L is a guess: it wastes resolution on thin-tailed models (BS) and may still be too small for the next fat-tailed model. c4 comes from each model's own CF, so the grid adapts automatically. Without adjusting, there was wrap around issue and density at higher x were non zero due to which call option price deviated.
+- **Consequence:** Now the grid is adjusted by adjusting the effective sigma, which ensures that end point x have zero densities. BS is unchanged (c4 = 0); the Heston T=10 stress case converges (27.9090 vs 27.91). Cost: A coarser dx will require increasing N or decrease in U range.
