@@ -1,48 +1,16 @@
 #pragma once
 #include "FFT.h"
+#include "modelparam_structs.h"
 #include <string>
 #include <utility>
 
+
 namespace fourier{
 
-// This is the BS parameter struct which is passed into BS characteristic funciton builder;    
-    struct BlackScholes_params{
-        double S_0;
-        double r;
-        double sigma;
-        double T;
-        
-    };
-
-// This is the Heston parameter struct which is passed into Heston characteristic funciton builder;
-    struct HestonParams{
-        double S_0,             // Initial price
-        T,                      // Maturity time
-        r,                      // interest rate
-        kappa,                  // speed of reversion for variance
-        gamma,                  // vol of vol
-        v_bar,                  // long-run mean of variance
-        v0,                     // initial variance
-        rho;                    // correlation between X-brownian and V-brownian series
-    };
-
-    struct MertonParams{
-        double S_0,
-            T,
-            r,
-            sigma, 
-            lambda,
-            mu_j,
-            sigma_j;
-    };
-
-    struct BatesParams{
-        HestonParams heston;
-        double lambda,
-            mu_j,
-            sigma_j;
-    };
-
+    using BlackScholes_params = model_params::BlackScholes_params;
+    using HestonParams = model_params::HestonParams;
+    using MertonParams = model_params::MertonParams;
+    using BatesParams = model_params::BatesParams;
 // This is the struct of Characteristic funcion, which is returned from every model characteristic function builder;
     struct CharacteristicFuncResult{
         CF charac_func;

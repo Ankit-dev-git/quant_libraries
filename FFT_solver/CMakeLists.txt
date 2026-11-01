@@ -8,7 +8,7 @@ add_library(recover_density
 
 target_include_directories(recover_density PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(recover_density PRIVATE project_warnings)
+target_link_libraries(recover_density PRIVATE project_warnings PUBLIC core)
 
 add_executable(run_density_recovery run_density_recovery.cpp)
 target_link_libraries(run_density_recovery PRIVATE recover_density project_warnings core)
