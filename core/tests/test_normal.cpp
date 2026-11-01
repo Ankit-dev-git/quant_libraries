@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "normal.h"
 #include <cmath>
+#include <limits>
 
 TEST(NormalTest, KnownValues){
     double pdf_0 = normal::norm_pdf(0.0);
@@ -46,4 +47,31 @@ TEST(NormalTest, BadInput){
 TEST(NormalTest, LeftTail){
     double cdf = normal::norm_cdf(-10);
     EXPECT_NEAR(cdf/7.619853024160593e-24, 1, 1e-12);
+}
+
+TEST(NormalInverseTest, CDFInverseCDF){
+    std::vector<double> p_vec {0.3, 0.57, 0.99, 1e-10};
+    for (auto p: p_vec){
+        EXPECT_NEAR(normal::norm_cdf(normal::norm_inv_cdf(p)), p, 1e-9*p)<< "p = " << p;
+    }
+}
+
+TEST(NormalInverseTest, CDFMinusX){
+    std::vector<double> p_vec {0.3, 0.57, 0.99};
+    for (auto p: p_vec){
+        EXPECT_NEAR(normal::norm_inv_cdf(1-p), -normal::norm_inv_cdf(p), 1e-9)<< "p = " << p;
+    }
+}
+
+TEST(NormalInverseTest, BadParam){
+    std::vector<double> p_vec { std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -4.7, 1.0, 0.0, 5.0 };
+    for (auto p: p_vec){
+        EXPECT_THROW(normal::norm_inv_cdf(p), std::invalid_argument);
+    }
+}
+
+TEST(NormalInverseTest, ReferenceValues){
+    EXPECT_NEAR(normal::norm_inv_cdf(0.975), 1.959963984540054, 1e-9 );
+    EXPECT_NEAR(normal::norm_inv_cdf(0.5), 0.0 , 1e-9 );
+
 }
