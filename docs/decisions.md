@@ -149,3 +149,28 @@
 - **Decision:** Option 2.
 - **Why:** QE is much faster than exact sampling (a few closed-form operations on one uniform vs a Poisson draw plus a gamma/chi-square draw with varying shape per step) and is the industry standard. QE maps one uniform to v through an inverse CDF, so a small parameter bump moves v smoothly under common random numbers; the exact sampler's Poisson count jumps discretely when a parameter is bumped, which makes bump-and-reprice Greeks noisy. Euler is biased over a finite step and can go negative, so it needs ad-hoc fixes.
 - **Consequence:** Only the first two moments are exact, so there is a small discretisation bias.
+
+
+## 2 Nov 2026 — ln K aligned on a grid node while using FFT to recover density (earlier decision, backfilled)
+
+- **Context:** The payoff (eˣ − K)⁺ has a kink at x = ln K. The trapezoid rule assumes the integrand is smooth (piecewise linear) between grid nodes; when the kink falls inside a cell, the error depends on where in the cell it sits.
+- **Options:**
+  1. Not aligning the grid to ln K.
+  2. Shifting the grid (x_min) by less than one dx so ln K falls exactly on a node; dx, N and L unchanged.
+- **Decision:** Option 2.
+- **Why:** With ln K between nodes, the error vs the analytical price changed sign as N grew and had no stable ratio between successive N (erratic, roughly first order). With ln K on a node the error is a clean O(dx²): it shrinks by 4× when N doubles, which is what made Richardson extrapolation possible (→ O(dx⁴), 1.7e-8 at N = 1024).
+- **Consequence:** The grid now depends on K, so each strike needs its own grid and its own density recovery (one FFT per strike) instead of pricing many strikes off one density. This costs time when pricing a whole smile (e.g. calibration over many strikes). If ln K lies outside the window [x_min, x_min + N·dx], it is not forced in: the grid stays centred on the mean and the density there is treated as zero.
+
+## 2 Nov 2026 — Richardson extrapolation of the Fourier price (earlier decision, backfilled)
+
+- **Context:** With ln K aligned, the Fourier price error is c·dx² + d·dx⁴ + … . Heston has no closed form, so the accuracy of a single price can't be checked directly.
+- **Options:**
+  1. Report the price at one N and increase N until it stops moving.
+  2. Richardson: price at N and 2N and combine P_R = (4·P_2N − P_N)/3, which cancels the dx² term.
+- **Decision:** Option 2
+- **Why:** Let P be the true price; doubling N (same window) halves dx:
+  - P_N  = P + c·dx² + d·dx⁴ + …
+  - P_2N = P + (c/4)·dx² + (d/16)·dx⁴ + …
+  - 4·P_2N − P_N = 3P + 0·dx² − (3/4)·d·dx⁴ + …  =>  P_R = (4·P_2N − P_N)/3 = P − (1/4)·d·dx⁴ + … . This ensures P_R converges to P at dx^4.
+  The dx² error cancels exactly, leaving O(dx⁴) — no analytical price needed.
+- **Consequence:** Two density recoveries per price (N and 2N, ~1.5× the cost of 2N alone). Only valid when the error is a clean O(dx²): it breaks if ln K is not on a node or if truncation/wrap-around error dominates.
