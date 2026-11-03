@@ -22,7 +22,7 @@ TEST(HestonMC, MomentMatchQuardatic){
     ASSERT_LT(psi, heston_mc::psi_c);
 
     for (auto u: u_vec)
-        vt_vec.push_back(heston_mc::heston_mc_variance(vt, dt, heston_param,  u));
+        vt_vec.push_back(heston_mc::heston_mc_variance(vt, dt, heston_param,  u).v_next);
     double sample_mean =  std::accumulate(vt_vec.begin(), vt_vec.end(), 0.0) / vt_vec.size();
 
     double sum = 0.0;
@@ -50,7 +50,7 @@ TEST(HestonMC, MomentMatchExponential){
     ASSERT_GT(psi, heston_mc::psi_c);
 
     for (auto u: u_vec)
-        vt_vec.push_back(heston_mc::heston_mc_variance(vt, dt, heston_param,  u));
+        vt_vec.push_back(heston_mc::heston_mc_variance(vt, dt, heston_param,  u).v_next);
     double sample_mean =  std::accumulate(vt_vec.begin(), vt_vec.end(), 0.0) / vt_vec.size();
 
     double sum = 0.0;
@@ -75,7 +75,7 @@ TEST(HestonMC, NonNegative){
     for (auto gamma:gamma_vec){
         heston_param.gamma = gamma;
         for (auto u: u_vec)
-           EXPECT_GE( heston_mc::heston_mc_variance(vt, dt, heston_param,  u), 0.0) << "u = " << u;
+           EXPECT_GE( heston_mc::heston_mc_variance(vt, dt, heston_param,  u).v_next, 0.0) << "u = " << u;
     }
 }
 
@@ -93,8 +93,8 @@ TEST(HestonMC, ExpectZeroBelowP){
     for (int i=1; i<=N*p; ++i)
         u_vec.push_back((i-0.5)/N);
     for (auto u: u_vec)
-        EXPECT_EQ(heston_mc::heston_mc_variance(vt, dt, heston_param,  u), 0.0) << "u = " << u;
-    EXPECT_GT(heston_mc::heston_mc_variance(vt, dt, heston_param, 0.99), 0.0);
+        EXPECT_EQ(heston_mc::heston_mc_variance(vt, dt, heston_param,  u).v_next, 0.0) << "u = " << u;
+    EXPECT_GT(heston_mc::heston_mc_variance(vt, dt, heston_param, 0.99).v_next, 0.0);
 }
 
 TEST(HestonMC, BranchSelection){
@@ -116,10 +116,10 @@ TEST(HestonMC, BranchSelection){
     // just below psi_c (~1.38): quadratic branch -> strictly positive at u = 0.1
     double vt_quad {0.07};
     ASSERT_LT(psi_of(vt_quad), heston_mc::psi_c);
-    EXPECT_GT(heston_mc::heston_mc_variance(vt_quad, dt, heston_param, u), 0.0);
+    EXPECT_GT(heston_mc::heston_mc_variance(vt_quad, dt, heston_param, u).v_next, 0.0);
 
     // just above psi_c (~1.71, p ~ 0.26): exponential branch -> exactly 0 at u = 0.1 <= p
     double vt_exp {0.055};
     ASSERT_GT(psi_of(vt_exp), heston_mc::psi_c);
-    EXPECT_EQ(heston_mc::heston_mc_variance(vt_exp, dt, heston_param, u), 0.0);
+    EXPECT_EQ(heston_mc::heston_mc_variance(vt_exp, dt, heston_param, u).v_next, 0.0);
 }

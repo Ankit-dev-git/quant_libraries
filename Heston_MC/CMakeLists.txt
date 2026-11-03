@@ -1,5 +1,6 @@
 add_library(heston_mc
     qe_scheme.cpp
+    qe_pricer.cpp
 )
 
 target_include_directories(heston_mc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
