@@ -1,5 +1,5 @@
-add_executable(heston_mc_tests test_heston_mc.cpp)
-target_link_libraries(heston_mc_tests PRIVATE heston_mc GTest::gtest_main project_warnings)
+add_executable(heston_mc_tests test_heston_mc.cpp test_heston_mc_pricer.cpp)
+target_link_libraries(heston_mc_tests PRIVATE heston_mc GTest::gtest_main project_warnings recover_density core) 
 
 include(GoogleTest)
 gtest_discover_tests(heston_mc_tests)
